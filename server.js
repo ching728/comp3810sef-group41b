@@ -3,8 +3,6 @@ require('dotenv').config();
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://1111:1111@cluster0.gkijine.mongodb.net/todo?retryWrites=true&w=majority';
 const PORT = process.env.PORT || 5000;
 
-
-
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -13,6 +11,7 @@ const path = require('path');
 const bcrypt = require('bcryptjs');
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
+const apiRoutes = require('./routes/api');  // 添加 API 路由
 const User = require('./models/User');
 
 const app = express();
@@ -57,6 +56,7 @@ const requireAuth = (req, res, next) => {
   if (req.session.userId) return next();
   res.redirect('/auth/login');
 };
+
 app.use(async (req, res, next) => {
   if (req.session.userId) {
     try {
@@ -71,12 +71,13 @@ app.use(async (req, res, next) => {
   }
   next();
 });
+
 // ----------------------
 // Routes
 // ----------------------
 app.use('/auth', authRoutes);
 app.use('/tasks', requireAuth, taskRoutes);
-
+app.use('/api', apiRoutes);  // 添加 API 路由
 
 // Home page
 app.get('/', (req, res) => {
@@ -89,6 +90,7 @@ app.get('/time', (req, res) => {
         initialTimeSeconds: 600 // Actual seconds (10 minutes)
     });
 });
+
 // ----------------------
 // 调试路由
 // ----------------------
