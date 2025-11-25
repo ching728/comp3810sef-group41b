@@ -3,7 +3,15 @@ const Task = require('../models/Task');
 const router = express.Router();
 
 // Middleware: 驗證登入 (API 版本)
-
+const requireAuthApi = (req, res, next) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ 
+      success: false,
+      error: 'Authentication required' 
+    });
+  }
+  next();
+};
 
 // GET /api/tasks (Read: all or search)
 router.get('/tasks', requireAuthApi, async (req, res) => {
