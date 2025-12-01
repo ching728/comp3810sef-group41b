@@ -79,6 +79,13 @@ app.use('/auth', authRoutes);
 app.use('/tasks', requireAuth, taskRoutes);
 app.use('/api', apiRoutes);  // 添加 API 路由
 
+// ----------------------
+// Calendar Route (日曆頁面)
+// ----------------------
+app.get('/calendar', requireAuth, (req, res) => {
+  res.redirect('/tasks/calendar'); // 重定向到 tasks 路由中的日曆頁面
+});
+
 // Home page
 app.get('/', (req, res) => {
   res.render('index', { title: 'Index - Todo App' });
