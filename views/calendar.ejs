@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Calendar - Todo App</title>
+    
+    <!-- FullCalendar CDN -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css' rel='stylesheet' />
+    
+    <style>
+        /* 基礎樣式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* 日曆樣式 */
+        #calendar {
+            margin-top: 20px;
+        }
+        
+        /* 彈出窗口樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        .modal-content h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        /* 任務詳情樣式 */
+        .event-detail-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .event-detail-item strong {
+            display: block;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .event-detail-item span {
+            display: block;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .event-detail-item p {
+            margin: 5px 0 0 0;
+            color: #666;
+        }
+        
+        /* 徽章樣式 */
+        .priority-badge, .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .priority-badge.high {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .priority-badge.medium {
+            background-color: #ffc107;
+            color: #333;
+        }
+        
+        .priority-badge.low {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .status-badge.pending {
+            background-color: #ffc107;
+            color: #333;
+        }
+        
+        .status-badge.in-progress {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .status-badge.completed {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        /* 日曆事件樣式 */
+        .fc-event {
+            cursor: pointer;
+            padding: 2px 5px !important;
+            margin: 1px 0 !important;
+            font-size: 12px !important;
+        }
+        
+        .fc-event-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <div class="container">
+        <header class="page-header">
+            <h1><i class="fas fa-calendar-alt"></i> Full Calendar</h1>
+            <div class="user-info">
+                <a href="/tasks" class="btn btn-secondary">
+                    <i class="fas fa-tasks"></i> Back to Tasks
+                </a>
+            </div>
+        </header>
+     
+        <!-- Calendar Container -->
+        <section class="card">
+            <h2 class="text-center">Your Schedule</h2>
+            <div id="calendar"></div>
+        </section>
+    </div>
+    
+    <!-- FullCalendar CDN -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    
+    <!-- Event Details Modal -->
+    <div id="eventDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3><i class="fas fa-info-circle"></i> Task Details</h3>
+            <div id="eventDetailsContent">
+                <!-- Dynamic content loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const detailsModal = document.getElementById('eventDetailsModal');
+            const closeBtns = document.querySelectorAll('.close');
+            const detailsContent = document.getElementById('eventDetailsContent');
+          
+            // 確保 events 是有效的數組
+            let calendarEvents = [];
+            try {
+                calendarEvents = <%- JSON.stringify(tasksJson ? JSON.parse(tasksJson) : []) %>;
+                console.log('Initial events:', calendarEvents);
+            } catch (e) {
+                console.error('Error parsing events:', e);
+                calendarEvents = [];
+            }
+            
+            // 檢查是否有任務數據
+            if (calendarEvents.length === 0) {
+                calendarEl.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <h3>📅 No tasks found</h3>
+                        <p>Create some tasks with due dates to see them here!</p>
+                        <a href="/tasks/new" class="btn" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-top: 10px;">
+                            Create New Task
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+          
+            // 處理事件數據
+            calendarEvents = calendarEvents.map(event => {
+                // 檢查是否有截止日期
+                if (!event.dueDate) {
+                    console.warn('Task has no dueDate:', event.title);
+                    return null;
+                }
+                
+                let cleanTitle = (event.title || '').replace(/ \(Task\)$/, '').trim();
+                
+                return {
+                    id: event._id || event.id,
+                    title: cleanTitle,
+                    start: event.dueDate, // FullCalendar 需要 start 字段
+                    extendedProps: {
+                        description: event.description || '',
+                        priority: event.priority || 'medium',
+                        status: event.status || 'pending'
+                    },
+                    backgroundColor: getPriorityColor(event.priority),
+                    borderColor: getPriorityColor(event.priority),
+                    textColor: '#fff'
+                };
+            }).filter(event => event !== null); // 過濾掉無效的事件
+          
+            console.log('Processed events:', calendarEvents);
+          
+            function getPriorityColor(priority) {
+                switch(priority) {
+                    case 'high': return '#dc3545';
+                    case 'medium': return '#ffc107';
+                    case 'low': return '#28a745';
+                    default: return '#007bff';
+                }
+            }
+          
+            // Initialize FullCalendar
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth'
+                },
+                events: calendarEvents,
+                eventClick: function(info) {
+                    const extendedProps = info.event.extendedProps || {};
+                    const startDate = info.event.start ? info.event.start.toLocaleDateString() : 'No date';
+                  
+                    const detailsHtml = `
+                        <div class="event-detail-item">
+                            <strong><i class="fas fa-tag"></i> Title:</strong>
+                            <span>${info.event.title}</span>
+                        </div>
+                        <div class="event-detail-item">
+                            <strong><i class="fas fa-calendar"></i> Due Date:</strong>
+                            <span>${startDate}</span>
+                        </div>
+                        <div class="event-detail-item">
+                            <strong><i class="fas fa-align-left"></i> Description:</strong>
+                            <span>${extendedProps.description || 'No description'}</span>
+                        </div>
+                        <div class="event-detail-item">
+                            <strong><i class="fas fa-flag"></i> Priority:</strong>
+                            <span class="priority-badge ${extendedProps.priority || 'medium'}">
+                                ${(extendedProps.priority || 'medium').toUpperCase()}
+                            </span>
+                        </div>
+                        <div class="event-detail-item">
+                            <strong><i class="fas fa-check-circle"></i> Status:</strong>
+                            <span class="status-badge ${extendedProps.status || 'pending'}">
+                                ${(extendedProps.status || 'pending').replace('-', ' ').toUpperCase()}
+                            </span>
+                        </div>
+                    `;
+                  
+                    detailsContent.innerHTML = detailsHtml;
+                    detailsModal.style.display = 'block';
+                }
+            });
+          
+            calendar.render();
+          
+            // Close handlers
+            closeBtns.forEach(btn => {
+                btn.onclick = function() {
+                    detailsModal.style.display = 'none';
+                };
+            });
+          
+            window.onclick = function(event) {
+                if (event.target == detailsModal) {
+                    detailsModal.style.display = 'none';
+                }
+            };
+        });
+    </script>
+</body>
+</html>
