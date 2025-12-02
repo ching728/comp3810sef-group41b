@@ -2,16 +2,13 @@ const express = require('express');
 const router = express.Router();
 const Task = require('../models/Task');
 
-// Middleware: 驗證登入
 const requireAuth = (req, res, next) => {
   if (!req.session.userId) return res.redirect('/auth/login');
   next();
 };
 
-// 日曆頁面
 router.get('/calendar', requireAuth, async (req, res) => {
   try {
-    // 獲取任務數據
     const tasks = await Task.find({ user: req.session.userId })
       .sort({ dueDate: 1 })
       .lean();
@@ -19,8 +16,8 @@ router.get('/calendar', requireAuth, async (req, res) => {
     res.render('calendar', { 
       title: 'Task Calendar - Todo App',
       user: req.user || { id: req.session.userId },
-      events: tasks,  // 改為傳遞 events 而不是 tasksJson
-      tasksJson: JSON.stringify(tasks) // 可以保留這個
+      events: tasks, 
+      tasksJson: JSON.stringify(tasks)
     });
   } catch (err) {
     console.error('Error loading calendar:', err);
@@ -28,9 +25,6 @@ router.get('/calendar', requireAuth, async (req, res) => {
   }
 });
 
-// ----------------------
-// 任務列表頁
-// ----------------------
 router.get('/', requireAuth, async (req, res) => {
   try {
     const { keyword, priority } = req.query;
@@ -52,14 +46,10 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
-// ----------------------
-// 新增任務頁
-// ----------------------
 router.get('/new', requireAuth, (req, res) => {
   res.render('new-task', { title: 'New Task - Todo App' });
 });
 
-// 處理新增任務
 router.post('/new', requireAuth, async (req, res) => {
   try {
     const { title, description, dueDate, priority, status } = req.body;
@@ -82,9 +72,6 @@ router.post('/new', requireAuth, async (req, res) => {
   }
 });
 
-// ----------------------
-// 編輯任務頁 - 修正路徑
-// ----------------------
 router.get('/:id/edit', requireAuth, async (req, res) => {
   try {
     console.log('Editing task ID:', req.params.id);
@@ -110,7 +97,6 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
   }
 });
 
-// 處理編輯任務 - 修正路徑
 router.post('/:id/edit', requireAuth, async (req, res) => {
   try {
     const { title, description, dueDate, priority, status } = req.body;
@@ -144,7 +130,6 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
   }
 });
 
-// 刪除任務
 router.post('/:id/delete', requireAuth, async (req, res) => {
   try {
     const taskId = req.params.id;
