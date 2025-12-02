@@ -1,9 +1,9 @@
 1. Project info:
-   Project name: ToDo App
-   Group no.: 41B
-   Students’ names(SID): LO Ching(14103940), LEUNG Siu Lei(14196090)
+   -Project name: ToDo App
+   -Group no.: 41B
+   -Students’ names(SID): LO Ching(14103940), LEUNG Siu Lei(14196090)
    
-2. Project file intro:
+3. Project file intro:
 - server.js: contain the server basic function, like the database connection,error handle ,routes and home page when the open the server  
 - package.json: use bcryptjs,body-parser,connect-mongo,cookie-parser,dotenv,ejs,express,express-session,mongoose dependencies
 - public: use css file to the basic webpage UI
