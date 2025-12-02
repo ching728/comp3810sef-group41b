@@ -1,4 +1,3 @@
-
 <html>
 <head><title>Tasks</title><link rel="stylesheet" href="/style.css"></head>
 <body>
@@ -138,11 +137,9 @@
             secondsInput.disabled = true;
             setBtn.disabled = true;
             }
-        // 开始计时器
         function startTimer() {
             if (isRunning) return;
             
-            // 如果时间为0，不能开始
             if (remainingTime <= 0) {
                 timerStatus.textContent = "Please set vaild time";
                 timerStatus.style.color = "#e74c3c";
@@ -166,7 +163,6 @@
             }, 1000);
         }
 
-        // 停止计时器
         function stopTimer() {
             if (!isRunning) return;
             
@@ -179,22 +175,18 @@
             timerStatus.style.color = "#f39c12";
         }
 
-        // 计时器完成
         function timerComplete() {
             stopTimer();
             timerStatus.textContent = "Time's up！";
             timerStatus.style.color = "#e74c3c";
             
-            // 闪烁效果
             
         }
 
-        // 按钮事件监听
         startBtn.addEventListener('click', startTimer);
         stopBtn.addEventListener('click', stopTimer);
         setBtn.addEventListener('click', setTimerTime);
 
-        // 键盘快捷键
         document.addEventListener('keydown', function(event) {
             if (event.code === 'Space') {
                 event.preventDefault();
@@ -205,19 +197,16 @@
                 }
             }
             
-            // Enter键设置时间
             if (event.code === 'Enter') {
                 event.preventDefault();
                 setTimerTime();
             }
         });
 
-        // 输入框变化时实时更新显示（可选）
         hoursInput.addEventListener('input', setTimerTime);
         minutesInput.addEventListener('input', setTimerTime);
         secondsInput.addEventListener('input', setTimerTime);
 
-        // 初始化显示
         updateDisplay();
     </script>
 </body>
