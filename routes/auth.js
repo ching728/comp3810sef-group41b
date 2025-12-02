@@ -2,7 +2,6 @@ const express = require('express');
 const User = require('../models/User');
 const router = express.Router();
 
-// Login page
 router.get('/login', (req, res) => {
   res.render('login', { 
     error: null, 
@@ -11,11 +10,9 @@ router.get('/login', (req, res) => {
   });
 });
 
-// Handle login - 支持表單和 JSON
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   
-  // 檢查是否是 JSON 請求
   const isJsonRequest = req.headers['content-type'] === 'application/json';
   
   try {
@@ -23,7 +20,6 @@ router.post('/login', async (req, res) => {
     console.log('Username:', username);
     console.log('Request type:', isJsonRequest ? 'JSON' : 'Form');
     
-    // 基本驗證
     if (!username || !password) {
       console.log('❌ Missing username or password');
       if (isJsonRequest) {
@@ -53,7 +49,6 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // 驗證密碼
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
       console.log('❌ Invalid password for user:', username);
@@ -69,7 +64,6 @@ router.post('/login', async (req, res) => {
       });
     }
     
-    // 設置 session
     req.session.userId = user._id;
     req.session.username = user.username;
     
@@ -79,7 +73,6 @@ router.post('/login', async (req, res) => {
       sessionId: req.sessionID
     });
     
-    // 根據請求類型返回響應
     if (isJsonRequest) {
       console.log('📦 Returning JSON response');
       return res.json({ 
@@ -112,7 +105,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Logout - support both GET and POST for compatibility
 router.get('/logout', (req, res) => {
   console.log('=== LOGOUT PROCESS (GET) ===');
   console.log('Logging out user:', req.session.username);
@@ -141,16 +133,14 @@ router.post('/logout', (req, res) => {
   });
 });
 
-// Register page
 router.get('/register', (req, res) => {
   res.render('register', { 
     error: null, 
     title: 'Register - Todo App',
-    formData: {} // 添加 formData 來保存輸入的數據
+    formData: {}
   });
 });
 
-// Handle registration
 router.post('/register', async (req, res) => {
   try {
     const { username, password, confirmPassword } = req.body;
@@ -162,10 +152,8 @@ router.post('/register', async (req, res) => {
       confirmPasswordLength: confirmPassword ? confirmPassword.length : 0 
     });
 
-    // 保存表單數據以便在錯誤時顯示
     const formData = { username };
 
-    // 驗證輸入 - 檢查是否為空
     if (!username || !password || !confirmPassword) {
       console.log('❌ Missing fields');
       return res.render('register', { 
@@ -175,10 +163,8 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // 去除前後空白
     const trimmedUsername = username.trim();
 
-    // 檢查用戶名長度
     if (trimmedUsername.length < 3) {
       console.log('❌ Username too short');
       return res.render('register', { 
@@ -197,7 +183,6 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // 檢查密碼長度
     if (password.length < 6) {
       console.log('❌ Password too short');
       return res.render('register', { 
@@ -207,7 +192,6 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // 檢查密碼確認
     if (password !== confirmPassword) {
       console.log('❌ Passwords do not match');
       return res.render('register', { 
@@ -217,7 +201,6 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // 檢查用戶名是否已存在
     console.log('🔍 Checking if username exists:', trimmedUsername);
     const existingUser = await User.findOne({ username: trimmedUsername });
     if (existingUser) {
@@ -229,7 +212,6 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // 創建新用戶
     console.log('✅ Creating new user:', trimmedUsername);
     const user = new User({ 
       username: trimmedUsername, 
@@ -240,7 +222,6 @@ router.post('/register', async (req, res) => {
     await user.save();
     console.log('✅ User created successfully. User ID:', user._id);
 
-    // 設置 session
     req.session.userId = user._id;
     req.session.username = user.username;
     
@@ -252,7 +233,6 @@ router.post('/register', async (req, res) => {
     console.log('🔄 Redirecting to /tasks');
     console.log('=== REGISTRATION PROCESS COMPLETED SUCCESSFULLY ===');
     
-    // 成功註冊，跳轉到任務頁面
     res.redirect('/tasks');
     
   } catch (err) {
@@ -261,12 +241,10 @@ router.post('/register', async (req, res) => {
     let errorMessage = 'Registration failed due to server error';
     const formData = { username: req.body.username };
     
-    // 處理不同的錯誤類型
     if (err.code === 11000) {
       errorMessage = 'Username already exists';
       console.log('❌ Duplicate username error');
     } else if (err.name === 'ValidationError') {
-      // 處理 Mongoose 驗證錯誤
       if (err.errors.username) {
         errorMessage = err.errors.username.message;
       } else if (err.errors.password) {
@@ -288,7 +266,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// 測試路由 - 用於除錯
 router.get('/debug', async (req, res) => {
   try {
     const users = await User.find({}, 'username createdAt');
