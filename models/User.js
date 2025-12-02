@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// 使用更簡單的 pre-save hook
 userSchema.pre('save', async function() {
   if (!this.isModified('password')) return;  
   this.password = await bcrypt.hash(this.password, 10);
