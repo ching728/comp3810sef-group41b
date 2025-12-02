@@ -61,7 +61,6 @@ The task then appears in the "My Tasks" page. To edit any details, users click t
 //Delete
 To delete a task, users click the "Delete" button. A confirmation dialog appears with the message "Are you sure you want to delete this task?" Clicking "Yes" permanently removes the task from the list.
 
-
 - Use of your RESTful CRUD services:
   
 //Login
