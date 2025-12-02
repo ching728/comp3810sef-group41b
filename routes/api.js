@@ -2,7 +2,6 @@ const express = require('express');
 const Task = require('../models/Task');
 const router = express.Router();
 
-// Middleware: 驗證登入 (API 版本)
 const requireAuthApi = (req, res, next) => {
   if (!req.session.userId) {
     return res.status(401).json({ 
@@ -13,7 +12,6 @@ const requireAuthApi = (req, res, next) => {
   next();
 };
 
-// GET /api/tasks (Read: all or search)
 router.get('/tasks', requireAuthApi, async (req, res) => {
   try {
     const { keyword, priority, status } = req.query;
@@ -37,7 +35,6 @@ router.get('/tasks', requireAuthApi, async (req, res) => {
   }
 });
 
-// GET /api/tasks/:id (Get single task)
 router.get('/tasks/:id', requireAuthApi, async (req, res) => {
   try {
     const task = await Task.findOne({ 
@@ -65,7 +62,6 @@ router.get('/tasks/:id', requireAuthApi, async (req, res) => {
   }
 });
 
-// POST /api/tasks (Create)
 router.post('/tasks', requireAuthApi, async (req, res) => {
   try {
     const { title, description, dueDate, priority, status } = req.body;
@@ -99,7 +95,6 @@ router.post('/tasks', requireAuthApi, async (req, res) => {
   }
 });
 
-// PUT /api/tasks/:id (Update)
 router.put('/tasks/:id', requireAuthApi, async (req, res) => {
   try {
     const { title, description, dueDate, priority, status } = req.body;
@@ -130,7 +125,6 @@ router.put('/tasks/:id', requireAuthApi, async (req, res) => {
   }
 });
 
-// DELETE /api/tasks/:id
 router.delete('/tasks/:id', requireAuthApi, async (req, res) => {
   try {
     const task = await Task.findOneAndDelete({ 
