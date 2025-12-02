@@ -1,7 +1,7 @@
 1. Project info:
-   -Project name: ToDo App
-   -Group no.: 41B
-   -Students’ names(SID): LO Ching(14103940), LEUNG Siu Lei(14196090)
+   Project name: ToDo App
+   Group no.: 41B
+   Students’ names(SID): LO Ching(14103940), LEUNG Siu Lei(14196090)
    
 3. Project file intro:
 - server.js: contain the server basic function, like the database connection,error handle ,routes and home page when the open the server  
@@ -10,7 +10,7 @@
 - views/:
   calendar.ejs: users can view all tasks in the calendar
   edit-task.ejs: user can edit their exist tasks in here by change the status, priority and dueDate in the task. User can choose to delete their task in this page
-  error.ejs: 
+  error.ejs: show the error message
   index:the home page to introduce the basic function to the new user, for example introduce the function on manage task
   login.ejs: users which already have account can login to their account, new users can click the button to register their account
   new-task.ejs:users can create a new task in here. 
