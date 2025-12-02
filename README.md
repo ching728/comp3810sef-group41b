@@ -6,7 +6,8 @@
 2. Project file intro:
 - server.js: contain the server basic function, like the database connection,error handle ,routes and home page when the open the server  
 - package.json: use bcryptjs,body-parser,connect-mongo,cookie-parser,dotenv,ejs,express,express-session,mongoose dependencies
-- public: use css file to the basic webpage UI
+- public/:
+  - style.css: use css file to the basic webpage UI
 - views/:
   - calendar.ejs: users can view all tasks in the calendar
   - edit-task.ejs: user can edit their exist tasks in here by change the status, priority and dueDate in the task. User can choose to delete their task in this page
